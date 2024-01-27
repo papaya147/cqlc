@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/papaya147/go-cassandra-codegen/options"
 )
@@ -12,5 +13,5 @@ func main() {
 		fmt.Println(err)
 	}
 
-	fmt.Println(opts)
+	log.Println(opts)
 }

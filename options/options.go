@@ -60,6 +60,10 @@ func NewOptions() (*Options, error) {
 		return nil, err
 	}
 
+	if err := replaceTypes(opts); err != nil {
+		return nil, err
+	}
+
 	return &opts, nil
 }
 

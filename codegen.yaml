@@ -1,0 +1,10 @@
+version: 1
+cql:
+  package: db
+  out: db/cql-codegen
+  cql_package: github.com/gocql/gocql
+  overrides:
+    - db_type: timestamp
+      go_type: time.Time
+    - db_type: text
+      go_type: string

@@ -24,8 +24,10 @@ type cqlConfig struct {
 }
 
 type Options struct {
-	Version int       `yaml:"version" json:"version" validate:"required"`
-	Cql     cqlConfig `yaml:"cql" json:"cql" validate:"required"`
+	Version      int       `yaml:"version" json:"version" validate:"required"`
+	Cql          cqlConfig `yaml:"cql" json:"cql" validate:"required"`
+	Dependencies []string
+	TypeMappings map[string]string
 }
 
 var configFileName = "codegen"
@@ -33,7 +35,9 @@ var yamlDir = fmt.Sprintf("./%s.yaml", configFileName)
 var jsonDir = fmt.Sprintf("./%s.json", configFileName)
 
 func NewOptions() (*Options, error) {
-	file, err := loadOptionsFile()
+	var opts Options
+
+	file, err := opts.loadConfigFile()
 	if err != nil {
 		return nil, err
 	}
@@ -43,16 +47,15 @@ func NewOptions() (*Options, error) {
 		return nil, err
 	}
 
-	var opts Options
 	if err = yaml.Unmarshal(content, &opts); err != nil {
 		return nil, err
 	}
 
-	if err := checkDirExists(opts.Cql.QueriesDir); err != nil {
+	if err := util.CheckPathExists(opts.Cql.QueriesDir); err != nil {
 		return nil, err
 	}
 
-	if err := checkDirExists(opts.Cql.SchemaDir); err != nil {
+	if err := util.CheckPathExists(opts.Cql.SchemaDir); err != nil {
 		return nil, err
 	}
 
@@ -60,28 +63,23 @@ func NewOptions() (*Options, error) {
 		return nil, err
 	}
 
-	if err := replaceTypes(opts); err != nil {
+	if err := opts.replaceTypes(); err != nil {
 		return nil, err
 	}
 
 	return &opts, nil
 }
 
-func loadOptionsFile() (*os.File, error) {
-	if err := checkDirExists(yamlDir); err == nil {
-		return os.Open(yamlDir)
+func (opts *Options) loadConfigFile() (*os.File, error) {
+	file, err := util.GetFile(yamlDir)
+	if err == nil {
+		return file, nil
 	}
 
-	if err := checkDirExists(jsonDir); err == nil {
-		return os.Open(jsonDir)
+	file, err = util.GetFile(jsonDir)
+	if err == nil {
+		return file, nil
 	}
 
 	return nil, fmt.Errorf("%s and %s config files were not found", yamlDir, jsonDir)
-}
-
-func checkDirExists(path string) error {
-	if _, err := os.Stat(path); err != nil {
-		return fmt.Errorf("the path %s does not exist", path)
-	}
-	return nil
 }

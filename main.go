@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/papaya147/go-cassandra-codegen/options"
+	"github.com/papaya147/go-cassandra-codegen/schema"
 )
 
 func main() {
@@ -13,5 +13,10 @@ func main() {
 		fmt.Println(err)
 	}
 
-	log.Println(opts)
+	s, err := schema.LoadSchema(opts)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(s)
 }

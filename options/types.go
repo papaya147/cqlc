@@ -2,10 +2,10 @@ package options
 
 import (
 	"fmt"
-	"log"
+	"strings"
 )
 
-var CassandraTypeMapping = map[string]string{
+var DefaultTypeMapping = map[string]string{
 	"ascii":     "string",
 	"bigint":    "int64",
 	"blob":      "[]byte",
@@ -26,14 +26,24 @@ var CassandraTypeMapping = map[string]string{
 	"uuid":      "uuid.UUID",
 }
 
-func replaceTypes(opts Options) error {
+func (opts *Options) replaceTypes() error {
 	typesToReplace := opts.Cql.Overrides
 	for _, v := range typesToReplace {
-		if _, ok := CassandraTypeMapping[v.DbType]; !ok {
+		if _, ok := DefaultTypeMapping[v.DbType]; !ok {
 			return fmt.Errorf("type %s not supported or does not exist", v.DbType)
 		}
-		CassandraTypeMapping[v.DbType] = v.GoType
+		goTypeSplit := strings.Split(v.GoType, "/")
+		goType := goTypeSplit[len(goTypeSplit)-1]
+		DefaultTypeMapping[v.DbType] = goType
+
+		if strings.Contains(goType, ".") {
+			goPackageSplit := strings.Split(v.GoType, ".")
+			goPackageSplit = goPackageSplit[:len(goPackageSplit)-1]
+			opts.Dependencies = append(opts.Dependencies, strings.Join(goPackageSplit, "."))
+		}
 	}
-	log.Println(CassandraTypeMapping)
+
+	opts.Dependencies = append(opts.Dependencies, opts.Cql.CqlPackage)
+	opts.TypeMappings = DefaultTypeMapping
 	return nil
 }

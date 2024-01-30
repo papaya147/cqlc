@@ -12,5 +12,3 @@ cql:
       go_type: string
     - db_type: uuid
       go_type: github.com/google/uuid.UUID
-    - db_type: papaya
-      go_type: github.com/papaya-labs/papaya-go/papaya

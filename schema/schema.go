@@ -36,10 +36,7 @@ func LoadSchema(opts *options.Options) (*Schema, error) {
 		return nil, err
 	}
 
-	if err := schema.loadKeyspaces(ddl...); err != nil {
-		return nil, err
-	}
-
+	schema.loadKeyspaces(ddl...)
 	schema.loadTables(ddl...)
 
 	if !errorList.IsEmpty() {

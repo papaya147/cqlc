@@ -58,7 +58,7 @@ func (schema *Schema) getTable(stmt string) {
 	})
 }
 
-const tableNamePatternFromCreateTable = `create table [a-z_]+\.([a-z_]+)`
+const tableNamePatternFromCreateTable = `create table [a-z_0-9]+\.([a-z_0-9]+)`
 
 func getTableName(stmt string) string {
 	match, err := util.GetFirstMatch(tableNamePatternFromCreateTable, stmt)
@@ -69,7 +69,7 @@ func getTableName(stmt string) string {
 	return match
 }
 
-const keyspaceNamePatternFromCreateTable = `create table ([a-z_]+)`
+const keyspaceNamePatternFromCreateTable = `create table ([a-z_0-9]+)`
 
 func getKeyspaceName(stmt string) string {
 	match, err := util.GetFirstMatch(keyspaceNamePatternFromCreateTable, stmt)
@@ -80,7 +80,7 @@ func getKeyspaceName(stmt string) string {
 	return match
 }
 
-const fieldsPatternFromCreateTable = `create table [a-z.]+\(([a-z_\s,]+)primary key`
+const fieldsPatternFromCreateTable = `create table [a-z0-9.]+\(([a-z_\s,0-9]+)primary key`
 
 func getFields(stmt string) map[string]string {
 	match, err := util.GetFirstMatch(fieldsPatternFromCreateTable, stmt)
@@ -102,7 +102,7 @@ func getFields(stmt string) map[string]string {
 	return fields
 }
 
-const partitionKeysPatternFromCreateTable = `primary key\s*\(\s*\(([a-z_,\s]+)`
+const partitionKeysPatternFromCreateTable = `primary key\s*\(\s*\(([a-z_,\s0-9]+)`
 
 func getPartitionKeys(stmt string) []string {
 	match, err := util.GetFirstMatch(partitionKeysPatternFromCreateTable, stmt)
@@ -119,7 +119,7 @@ func getPartitionKeys(stmt string) []string {
 	return keys
 }
 
-const clusteringKeyPatternFromCreateTable = `primary key\s*\(\s*\([a-z_,\s]+\),\s*([a-z_,\s]+)`
+const clusteringKeyPatternFromCreateTable = `primary key\s*\(\s*\([a-z_,\s0-9]+\),\s*([a-z_,\s0-9]+)`
 
 func getClusteringKeys(stmt string) []string {
 	match, err := util.GetFirstMatch(clusteringKeyPatternFromCreateTable, stmt)

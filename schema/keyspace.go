@@ -4,9 +4,9 @@ import (
 	"github.com/papaya147/go-cassandra-codegen/util"
 )
 
-const keyspaceNamePatternFromCreateKeyspace = `create keyspace ([a-z_]+)`
+const keyspaceNamePatternFromCreateKeyspace = `create keyspace ([a-z_0-9]+)`
 
-func (schema *Schema) loadKeyspaces(ddl ...string) error {
+func (schema *Schema) loadKeyspaces(ddl ...string) {
 	for _, stmt := range ddl {
 		if !util.CheckMatch(keyspaceNamePatternFromCreateKeyspace, stmt) {
 			continue
@@ -16,8 +16,6 @@ func (schema *Schema) loadKeyspaces(ddl ...string) error {
 
 		schema.Keyspaces = append(schema.Keyspaces, keyspaceName)
 	}
-
-	return nil
 }
 
 func (schema *Schema) getKeyspace(stmt string) string {

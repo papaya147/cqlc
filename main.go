@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/papaya147/go-cassandra-codegen/options"
+	"github.com/papaya147/go-cassandra-codegen/query"
 	"github.com/papaya147/go-cassandra-codegen/schema"
 )
 
@@ -13,10 +14,15 @@ func main() {
 		fmt.Println(err)
 	}
 
-	s, err := schema.LoadSchema(opts)
+	schema, err := schema.LoadSchema(opts)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(s)
+	queryList, err := query.LoadQuery(schema)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(queryList)
 }

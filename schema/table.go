@@ -18,9 +18,9 @@ func (schema *Schema) loadTables(ddl ...string) {
 }
 
 func (schema *Schema) getTable(stmt string) {
-	table := getTableName(stmt)
+	tableName := getMatch(tableNamePatternFromCreateTable, stmt)
 
-	keyspace := getKeyspaceName(stmt)
+	keyspace := getMatch(keyspaceNamePatternFromCreateTable, stmt)
 
 	// check if keyspace exists in create statements
 	if !util.Contains[string](schema.Keyspaces, keyspace) {
@@ -49,44 +49,22 @@ func (schema *Schema) getTable(stmt string) {
 
 	updatedTypeFields := schema.injectOptionTypes(fields)
 
-	schema.Tables = append(schema.Tables, Table{
+	schema.Tables[tableName] = table{
 		Keyspace:       keyspace,
-		Name:           table,
 		Fields:         updatedTypeFields,
 		PartitionKeys:  partitionKeys,
 		ClusteringKeys: clusteringKeys,
-	})
+	}
 }
 
 const tableNamePatternFromCreateTable = `create table [a-z_0-9]+\.([a-z_0-9]+)`
 
-func getTableName(stmt string) string {
-	match, err := util.GetFirstMatch(tableNamePatternFromCreateTable, stmt)
-	if err != nil {
-		errorList.Add(err)
-	}
-
-	return match
-}
-
 const keyspaceNamePatternFromCreateTable = `create table ([a-z_0-9]+)`
-
-func getKeyspaceName(stmt string) string {
-	match, err := util.GetFirstMatch(keyspaceNamePatternFromCreateTable, stmt)
-	if err != nil {
-		errorList.Add(err)
-	}
-
-	return match
-}
 
 const fieldsPatternFromCreateTable = `create table [a-z0-9.]+\(([a-z_\s,0-9]+)primary key`
 
 func getFields(stmt string) map[string]string {
-	match, err := util.GetFirstMatch(fieldsPatternFromCreateTable, stmt)
-	if err != nil {
-		errorList.Add(err)
-	}
+	match := getMatch(fieldsPatternFromCreateTable, stmt)
 
 	fieldsUntrimmed := strings.Split(match, ",")
 	fields := make(map[string]string, len(fieldsUntrimmed))
@@ -105,10 +83,7 @@ func getFields(stmt string) map[string]string {
 const partitionKeysPatternFromCreateTable = `primary key\s*\(\s*\(([a-z_,\s0-9]+)`
 
 func getPartitionKeys(stmt string) []string {
-	match, err := util.GetFirstMatch(partitionKeysPatternFromCreateTable, stmt)
-	if err != nil {
-		errorList.Add(err)
-	}
+	match := getMatch(partitionKeysPatternFromCreateTable, stmt)
 
 	keysUntrimmed := strings.Split(match, ",")
 	keys := make([]string, len(keysUntrimmed))
@@ -122,10 +97,7 @@ func getPartitionKeys(stmt string) []string {
 const clusteringKeyPatternFromCreateTable = `primary key\s*\(\s*\([a-z_,\s0-9]+\),\s*([a-z_,\s0-9]+)`
 
 func getClusteringKeys(stmt string) []string {
-	match, err := util.GetFirstMatch(clusteringKeyPatternFromCreateTable, stmt)
-	if err != nil {
-		errorList.Add(err)
-	}
+	match := getMatch(clusteringKeyPatternFromCreateTable, stmt)
 
 	keysUntrimmed := strings.Split(strings.TrimSpace(match), ",")
 	keys := make([]string, len(keysUntrimmed))
@@ -139,7 +111,7 @@ func getClusteringKeys(stmt string) []string {
 func (schema *Schema) injectOptionTypes(fields map[string]string) map[string]string {
 	goFields := map[string]string{}
 	for name, typ := range fields {
-		goType, ok := schema.options.TypeMappings[typ]
+		goType, ok := schema.Options.TypeMappings[typ]
 		if !ok {
 			errorList.Add(fmt.Errorf("type %s is not a valid type for field %s", typ, name))
 		}

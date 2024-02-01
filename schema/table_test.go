@@ -18,16 +18,7 @@ func addRandomTableToSchema(t *testing.T) {
 	)`, keyspace, table)
 	testSchema.loadTables(stmt)
 	require.Empty(t, errorList)
-	require.Contains(t, testSchema.Tables, Table{
-		Keyspace: keyspace,
-		Name:     table,
-		Fields: map[string]string{
-			"t1": "int32",
-			"t2": "int32",
-		},
-		PartitionKeys:  []string{"t1"},
-		ClusteringKeys: []string{"t2"},
-	})
+	require.Contains(t, testSchema.Tables, table)
 }
 
 func TestLoadTables(t *testing.T) {

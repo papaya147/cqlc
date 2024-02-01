@@ -12,17 +12,8 @@ func (schema *Schema) loadKeyspaces(ddl ...string) {
 			continue
 		}
 
-		keyspaceName := schema.getKeyspace(stmt)
+		keyspaceName := getMatch(keyspaceNamePatternFromCreateKeyspace, stmt)
 
 		schema.Keyspaces = append(schema.Keyspaces, keyspaceName)
 	}
-}
-
-func (schema *Schema) getKeyspace(stmt string) string {
-	match, err := util.GetFirstMatch(keyspaceNamePatternFromCreateKeyspace, stmt)
-	if err != nil {
-		errorList.Add(err)
-	}
-
-	return match
 }

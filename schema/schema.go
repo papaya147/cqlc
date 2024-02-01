@@ -5,33 +5,33 @@ import (
 	"github.com/papaya147/go-cassandra-codegen/util"
 )
 
-type Table struct {
+type table struct {
 	Keyspace       string
-	Name           string
 	Fields         map[string]string
 	PartitionKeys  []string
 	ClusteringKeys []string
 }
 
 type Schema struct {
-	Tables    []Table
+	Tables    map[string]table
 	Keyspaces []string
-	options   *options.Options
+	Options   *options.Options
 }
 
 var errorList = util.NewErrorList()
 
 func LoadSchema(opts *options.Options) (*Schema, error) {
 	schema := Schema{
-		options: opts,
+		Options: opts,
+		Tables:  map[string]table{},
 	}
 
-	files, err := util.GetFilesInDir(schema.options.Cql.SchemaDir, "sql")
+	files, err := util.GetFilesInDir(schema.Options.Cql.SchemaDir, "sql")
 	if err != nil {
 		return nil, err
 	}
 
-	ddl, err := loadFiles(schema.options.Cql.SchemaDir+"/", files...)
+	ddl, err := loadFiles(schema.Options.Cql.SchemaDir+"/", files...)
 	if err != nil {
 		return nil, err
 	}

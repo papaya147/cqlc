@@ -24,3 +24,21 @@ func GetFirstMatch(regex, str string) (string, error) {
 
 	return "", fmt.Errorf("%s not found in %s", regex, str)
 }
+
+func GetAllMatches(regex, str string) ([]string, error) {
+	if !CheckMatch(regex, str) {
+		return nil, fmt.Errorf("%s not found in %s", regex, str)
+	}
+
+	re := regexp.MustCompile(regex)
+
+	matches := re.FindAllStringSubmatch(str, -1)
+	var res []string
+	for _, match := range matches {
+		if len(match) >= 2 {
+			res = append(res, match[1])
+		}
+	}
+
+	return res, nil
+}

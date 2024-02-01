@@ -11,12 +11,14 @@ var testSchema = Schema{}
 
 func wipeTestSchema() {
 	testSchema = Schema{
-		options: options.NewMockOptions(),
+		Options: options.NewMockOptions(),
+		Tables:  map[string]table{},
 	}
 }
 
 func TestMain(m *testing.M) {
-	testSchema.options = options.NewMockOptions()
+	testSchema.Options = options.NewMockOptions()
+	testSchema.Tables = map[string]table{}
 
 	os.Exit(m.Run())
 }

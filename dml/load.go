@@ -9,7 +9,7 @@ import (
 	"github.com/papaya147/cqlc/util"
 )
 
-var RawStatements []string
+var rawStatements []string
 
 func Load(ctx context.Context, dir string) error {
 	stmts, err := getDML(ctx, dir)
@@ -17,7 +17,7 @@ func Load(ctx context.Context, dir string) error {
 		return err
 	}
 
-	RawStatements = stmts
+	rawStatements = stmts
 
 	return nil
 }

@@ -13,7 +13,7 @@ var tables []string
 const captureKeyspaceFromCreateKeyspace = `(?i)CREATE KEYSPACE ([A-Za-z_][A-Za-z0-9_]*)`
 
 func loadKeyspaces(context.Context) {
-	for _, stmt := range RawStatements {
+	for _, stmt := range rawStatements {
 		keyspace, err := util.GetFirstMatch(captureKeyspaceFromCreateKeyspace, stmt)
 		if err == nil {
 			keyspaces = append(keyspaces, keyspace)
@@ -27,7 +27,7 @@ const captureTableFromCreateTable = `(?i)CREATE TABLE [^.]+\.([A-Za-z_][A-Za-z_0
 func loadTables(context.Context) error {
 	list := util.NewErrorList()
 
-	for _, stmt := range RawStatements {
+	for _, stmt := range rawStatements {
 		// getting keyspace in table definition
 		keyspace, err := util.GetFirstMatch(captureKeyspaceFromCreateTable, stmt)
 		if err != nil {

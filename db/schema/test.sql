@@ -1,5 +1,5 @@
 CREATE KEYSPACE data;
-CREATE TABLE data.trips(
+create TABLE data.trips(
     emuserid text,
     vin text,
     start timestamp,

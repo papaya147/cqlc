@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -20,9 +22,9 @@ func RandomInt32(min, max int32) int32 {
 	return min + rand.Int31n(max-min+1)
 }
 
-// func RandomUuid() uuid.UUID {
-// 	return uuid.New()
-// }
+func RandomUuid() uuid.UUID {
+	return uuid.New()
+}
 
 func RandomString(n int) string {
 	var sb strings.Builder

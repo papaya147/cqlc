@@ -17,6 +17,7 @@ func NewMockOptions() *Options {
 			"github.com/google/uuid.UUID",
 		},
 	}
+
 	opts.replaceTypes()
 
 	return opts

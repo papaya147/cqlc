@@ -1,4 +1,4 @@
-module github.com/papaya147/go-cassandra-codegen
+module github.com/papaya147/cqlc
 
 go 1.20
 

@@ -1,11 +1,10 @@
 package options
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
-	"os"
 
-	"github.com/papaya147/go-cassandra-codegen/util"
+	"github.com/papaya147/cqlc/util"
 	"gopkg.in/yaml.v3"
 )
 
@@ -30,33 +29,31 @@ type Options struct {
 	TypeMappings map[string]string
 }
 
-var configFileName = "codegen"
+var configFileName = "cqlc"
 var yamlDir = fmt.Sprintf("./%s.yaml", configFileName)
 var jsonDir = fmt.Sprintf("./%s.json", configFileName)
 
-func NewOptions() (*Options, error) {
+func LoadOptions() (*Options, error) {
+	configFile, fileType, err := getConfigFilePath()
+	if err != nil {
+		return nil, err
+	}
+
+	configContent, err := util.GetFileContents(configFile)
+	if err != nil {
+		return nil, err
+	}
+
 	var opts Options
-
-	file, err := opts.loadConfigFile()
-	if err != nil {
-		return nil, err
-	}
-
-	content, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = yaml.Unmarshal(content, &opts); err != nil {
-		return nil, err
-	}
-
-	if err := util.CheckPathExists(opts.Cql.QueriesDir); err != nil {
-		return nil, err
-	}
-
-	if err := util.CheckPathExists(opts.Cql.SchemaDir); err != nil {
-		return nil, err
+	switch fileType {
+	case "yaml":
+		if err := yaml.Unmarshal(configContent, &opts); err != nil {
+			return nil, err
+		}
+	case "json":
+		if err := json.Unmarshal(configContent, &opts); err != nil {
+			return nil, err
+		}
 	}
 
 	if err := util.Validate(opts); err != nil {
@@ -70,16 +67,14 @@ func NewOptions() (*Options, error) {
 	return &opts, nil
 }
 
-func (opts *Options) loadConfigFile() (*os.File, error) {
-	file, err := util.GetFile(yamlDir)
-	if err == nil {
-		return file, nil
+func getConfigFilePath() (string, string, error) {
+	if err := util.CheckPathExists(yamlDir); err == nil {
+		return yamlDir, "yaml", nil
 	}
 
-	file, err = util.GetFile(jsonDir)
-	if err == nil {
-		return file, nil
+	if err := util.CheckPathExists(jsonDir); err == nil {
+		return jsonDir, "json", nil
 	}
 
-	return nil, fmt.Errorf("%s and %s config files were not found", yamlDir, jsonDir)
+	return "", "", fmt.Errorf("no config file found")
 }

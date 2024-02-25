@@ -3,26 +3,15 @@ package main
 import (
 	"fmt"
 
-	"github.com/papaya147/go-cassandra-codegen/options"
-	"github.com/papaya147/go-cassandra-codegen/query"
-	"github.com/papaya147/go-cassandra-codegen/schema"
+	"github.com/papaya147/cqlc/options"
 )
 
 func main() {
-	opts, err := options.NewOptions()
+	opts, err := options.LoadOptions()
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
-	schema, err := schema.LoadSchema(opts)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	queryList, err := query.LoadQuery(schema)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(queryList)
+	fmt.Println(opts)
 }

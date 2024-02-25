@@ -1,7 +1,7 @@
 version: 1
 cql:
   package: db
-  out: db/cql-codegen
+  out: db/cqlc
   cql_package: github.com/gocql/gocql
   queries: ./db/queries
   schema: ./db/schema

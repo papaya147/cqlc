@@ -32,6 +32,7 @@ func (opts *Options) replaceTypes() error {
 		if _, ok := DefaultTypeMapping[v.DbType]; !ok {
 			return fmt.Errorf("type %s not supported or does not exist", v.DbType)
 		}
+
 		goTypeSplit := strings.Split(v.GoType, "/")
 		goType := goTypeSplit[len(goTypeSplit)-1]
 		DefaultTypeMapping[v.DbType] = goType

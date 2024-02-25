@@ -12,7 +12,7 @@ import (
 var RawStatements []string
 
 func Load(ctx context.Context, dir string) error {
-	stmts, err := getDML(dir)
+	stmts, err := getDML(ctx, dir)
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func Load(ctx context.Context, dir string) error {
 	return nil
 }
 
-func getDML(dir string) ([]string, error) {
+func getDML(ctx context.Context, dir string) ([]string, error) {
 	fileNames, err := util.GetFilesInDir(dir, "sql")
 	if err != nil {
 		return nil, err

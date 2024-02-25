@@ -21,6 +21,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+
+	fmt.Println("no errors")
 }
 
 func loadFiles(opts *options.Options) error {

@@ -12,17 +12,23 @@ import (
 var RawStatements []string
 
 func Load(ctx context.Context, dir string) error {
-	stmts, err := getDDL(dir)
+	stmts, err := getDDL(ctx, dir)
 	if err != nil {
 		return err
 	}
 
 	RawStatements = stmts
 
+	// loading keyspaces and tables
+	loadKeyspaces(ctx)
+	if err := loadTables(ctx); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func getDDL(dir string) ([]string, error) {
+func getDDL(ctx context.Context, dir string) ([]string, error) {
 	fileNames, err := util.GetFilesInDir(dir, "sql")
 	if err != nil {
 		return nil, err

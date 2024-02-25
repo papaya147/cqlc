@@ -1,3 +1,4 @@
+CREATE KEYSPACE data;
 CREATE TABLE data.trips(
     emuserid text,
     vin text,

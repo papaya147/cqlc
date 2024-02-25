@@ -38,7 +38,7 @@ func GetFilesInDir(path, extension string) ([]string, error) {
 			continue
 		}
 
-		fileNames = append(fileNames, file.Name())
+		fileNames = append(fileNames, fileName)
 	}
 
 	return fileNames, nil

@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/papaya147/cqlc/ddl"
+	"github.com/papaya147/cqlc/dml"
 	"github.com/papaya147/cqlc/options"
+	"github.com/papaya147/parallelize"
 )
 
 func main() {
@@ -13,5 +17,24 @@ func main() {
 		return
 	}
 
-	fmt.Println(opts)
+	if err := loadFiles(opts); err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
+func loadFiles(opts *options.Options) error {
+	group := parallelize.NewSyncGroup()
+
+	parallelize.AddMethodWithArgs(group, ddl.Load, parallelize.MethodWithArgsParams[string]{
+		Context: context.Background(),
+		Input:   opts.Cql.SchemaDir,
+	})
+
+	parallelize.AddMethodWithArgs(group, dml.Load, parallelize.MethodWithArgsParams[string]{
+		Context: context.Background(),
+		Input:   opts.Cql.QueriesDir,
+	})
+
+	return group.Run()
 }

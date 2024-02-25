@@ -22,20 +22,28 @@ func main() {
 		return
 	}
 
+	ddlConfig, err := ddl.PrepareConfig(context.Background())
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(ddlConfig)
+
 	fmt.Println("no errors")
 }
 
-func loadFiles(opts *options.Options) error {
+func loadFiles(opts *options.Config) error {
 	group := parallelize.NewSyncGroup()
 
-	parallelize.AddMethodWithArgs(group, ddl.Load, parallelize.MethodWithArgsParams[string]{
+	parallelize.AddMethodWithArgs(group, ddl.Load, parallelize.MethodWithArgsParams[*options.Config]{
 		Context: context.Background(),
-		Input:   opts.Cql.SchemaDir,
+		Input:   opts,
 	})
 
-	parallelize.AddMethodWithArgs(group, dml.Load, parallelize.MethodWithArgsParams[string]{
+	parallelize.AddMethodWithArgs(group, dml.Load, parallelize.MethodWithArgsParams[*options.Config]{
 		Context: context.Background(),
-		Input:   opts.Cql.QueriesDir,
+		Input:   opts,
 	})
 
 	return group.Run()

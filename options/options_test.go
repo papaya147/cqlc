@@ -9,8 +9,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func createRandomOptions(t *testing.T) *Options {
-	opts := Options{
+func createRandomOptions(t *testing.T) *Config {
+	opts := Config{
 		Version: int(util.RandomInt32(0, 100)),
 		Cql: cqlConfig{
 			Package:    util.RandomString(10),
@@ -34,7 +34,7 @@ func createRandomOptions(t *testing.T) *Options {
 	return &opts
 }
 
-func createRandomYamlOptions(t *testing.T) *Options {
+func createRandomYamlOptions(t *testing.T) *Config {
 	opts := createRandomOptions(t)
 
 	y, _ := yaml.Marshal(opts)
@@ -44,7 +44,7 @@ func createRandomYamlOptions(t *testing.T) *Options {
 	return opts
 }
 
-func createRandomJsonOptions(t *testing.T) *Options {
+func createRandomJsonOptions(t *testing.T) *Config {
 	opts := createRandomOptions(t)
 
 	j, _ := json.Marshal(opts)

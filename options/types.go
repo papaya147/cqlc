@@ -26,7 +26,7 @@ var DefaultTypeMapping = map[string]string{
 	"uuid":      "uuid.UUID",
 }
 
-func (opts *Options) replaceTypes() error {
+func (opts *Config) replaceTypes() error {
 	typesToReplace := opts.Cql.Overrides
 	for _, v := range typesToReplace {
 		if _, ok := DefaultTypeMapping[v.DbType]; !ok {

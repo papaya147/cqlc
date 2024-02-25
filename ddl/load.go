@@ -6,24 +6,35 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/papaya147/cqlc/options"
 	"github.com/papaya147/cqlc/util"
 )
 
+var userOptions *options.Config
+
 var rawStatements []string
 
-func Load(ctx context.Context, dir string) error {
-	stmts, err := getDDL(ctx, dir)
+type TableConfig struct {
+	Keyspace   string
+	Name       string
+	Fields     Fields
+	PrimaryKey Keys
+}
+
+type Config struct {
+	Keyspaces   []string
+	Tables      []string
+	TableConfig []TableConfig
+}
+
+func Load(ctx context.Context, opts *options.Config) error {
+	stmts, err := getDDL(ctx, opts.Cql.SchemaDir)
 	if err != nil {
 		return err
 	}
 
+	userOptions = opts
 	rawStatements = stmts
-
-	// loading keyspaces and tables
-	loadKeyspaces(ctx)
-	if err := loadTables(ctx); err != nil {
-		return err
-	}
 
 	return nil
 }
@@ -49,4 +60,31 @@ func getDDL(ctx context.Context, dir string) ([]string, error) {
 	}
 
 	return strings.Split(fileContents, ";"), nil
+}
+
+func PrepareConfig(ctx context.Context) (*Config, error) {
+	// loading keyspaces and tables
+	loadKeyspaceNames(ctx)
+	if err := loadTableNames(ctx); err != nil {
+		return nil, err
+	}
+	if err := loadTableFields(ctx, userOptions.TypeMappings); err != nil {
+		return nil, err
+	}
+
+	config := Config{
+		Keyspaces: keyspaces,
+		Tables:    tables,
+	}
+
+	for table, fields := range tableFields {
+		config.TableConfig = append(config.TableConfig, TableConfig{
+			Keyspace:   tableKeyspaceMap[table],
+			Name:       table,
+			Fields:     fields,
+			PrimaryKey: tableKeys[table],
+		})
+	}
+
+	return &config, nil
 }

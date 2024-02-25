@@ -6,17 +6,24 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/papaya147/cqlc/options"
 	"github.com/papaya147/cqlc/util"
 )
 
+var userOptions *options.Config
+
 var rawStatements []string
 
-func Load(ctx context.Context, dir string) error {
-	stmts, err := getDML(ctx, dir)
+type Config struct {
+}
+
+func Load(ctx context.Context, opts *options.Config) error {
+	stmts, err := getDML(ctx, opts.Cql.QueriesDir)
 	if err != nil {
 		return err
 	}
 
+	userOptions = opts
 	rawStatements = stmts
 
 	return nil

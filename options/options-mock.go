@@ -1,7 +1,7 @@
 package options
 
-func NewMockOptions() *Options {
-	opts := &Options{
+func NewMockOptions() *Config {
+	opts := &Config{
 		Version: 1,
 		Cql: cqlConfig{
 			Package:    "db",

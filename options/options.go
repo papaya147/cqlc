@@ -22,7 +22,7 @@ type cqlConfig struct {
 	Overrides  []typeOverrides `yaml:"overrides" json:"overrides" validate:"dive"`
 }
 
-type Options struct {
+type Config struct {
 	Version      int       `yaml:"version" json:"version" validate:"required"`
 	Cql          cqlConfig `yaml:"cql" json:"cql" validate:"required"`
 	Dependencies []string
@@ -33,7 +33,7 @@ var configFileName = "cqlc"
 var yamlDir = fmt.Sprintf("./%s.yaml", configFileName)
 var jsonDir = fmt.Sprintf("./%s.json", configFileName)
 
-func LoadOptions() (*Options, error) {
+func LoadOptions() (*Config, error) {
 	configFile, fileType, err := getConfigFilePath()
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func LoadOptions() (*Options, error) {
 		return nil, err
 	}
 
-	var opts Options
+	var opts Config
 	switch fileType {
 	case "yaml":
 		if err := yaml.Unmarshal(configContent, &opts); err != nil {

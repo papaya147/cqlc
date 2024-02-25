@@ -53,3 +53,18 @@ func GetFileContents(path string) ([]byte, error) {
 
 	return os.ReadFile(path)
 }
+
+func WriteFile(path string, contents []byte) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write(contents)
+	return err
+}
+
+func DeleteFile(path string) error {
+	return os.Remove(path)
+}

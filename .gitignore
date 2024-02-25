@@ -1,2 +1,4 @@
 *-app
 go.work
+options/cqlc.yaml
+options/cqlc.json

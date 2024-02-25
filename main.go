@@ -28,7 +28,13 @@ func main() {
 		return
 	}
 
-	fmt.Println(ddlConfig)
+	dmlConfig, err := dml.PrepareConfig(context.Background(), ddlConfig)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(dmlConfig)
 
 	fmt.Println("no errors")
 }

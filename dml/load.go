@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/papaya147/cqlc/ddl"
 	"github.com/papaya147/cqlc/options"
 	"github.com/papaya147/cqlc/util"
 )
@@ -50,4 +51,8 @@ func getDML(ctx context.Context, dir string) ([]string, error) {
 	}
 
 	return strings.Split(fileContents, ";"), nil
+}
+
+func PrepareConfig(ctx context.Context, ddlConfig *ddl.Config) (*Config, error) {
+	return nil, nil
 }

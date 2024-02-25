@@ -1,31 +1,25 @@
 package util
 
-import "errors"
-
 type ErrorList []error
 
 func NewErrorList() ErrorList {
 	return ErrorList{}
 }
 
-func (e *ErrorList) SerialiseString() string {
+func (e *ErrorList) Error() string {
+	if e.IsEmpty() {
+		return ""
+	}
+
 	out := ""
 	for _, err := range *e {
-		out += err.Error() + "\n"
+		out += ", " + err.Error()
 	}
-	return out
+	return out[2:]
 }
 
 func (e *ErrorList) Add(err error) {
 	*e = append(*e, err)
-}
-
-func (e *ErrorList) SerialiseError() error {
-	out := ""
-	for _, err := range *e {
-		out += err.Error() + "\n"
-	}
-	return errors.New(out)
 }
 
 func (e *ErrorList) IsEmpty() bool {

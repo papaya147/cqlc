@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/papaya147/cqlc/ddl"
 	"github.com/papaya147/cqlc/dml"
@@ -34,7 +35,14 @@ func main() {
 		return
 	}
 
-	fmt.Println(dmlConfig)
+	for _, a := range dmlConfig {
+		log.Println(a.Name)
+		for k, v := range a.InputFields {
+			log.Println(k)
+			log.Println(*v)
+		}
+		log.Println()
+	}
 
 	fmt.Println("no errors")
 }

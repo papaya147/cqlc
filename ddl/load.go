@@ -16,16 +16,11 @@ var rawStatements []string
 
 type TableConfig struct {
 	Keyspace   string
-	Name       string
 	Fields     Fields
 	PrimaryKey Keys
 }
 
-type Config struct {
-	Keyspaces   []string
-	Tables      []string
-	TableConfig []TableConfig
-}
+type Config map[string]TableConfig
 
 func Load(ctx context.Context, opts *options.Config) error {
 	stmts, err := getDDL(ctx, opts.Cql.SchemaDir)
@@ -59,10 +54,18 @@ func getDDL(ctx context.Context, dir string) ([]string, error) {
 		return nil, errors.New("no content found in any schema files")
 	}
 
-	return strings.Split(fileContents, ";"), nil
+	stmts := strings.Split(fileContents, ";")
+	nonEmptyStmts := []string{}
+	for _, stmt := range stmts {
+		if stmt != "" {
+			nonEmptyStmts = append(nonEmptyStmts, stmt)
+		}
+	}
+
+	return nonEmptyStmts, nil
 }
 
-func PrepareConfig(ctx context.Context) (*Config, error) {
+func PrepareConfig(ctx context.Context) (Config, error) {
 	// loading keyspaces and tables
 	loadKeyspaceNames(ctx)
 	if err := loadTableNames(ctx); err != nil {
@@ -72,19 +75,15 @@ func PrepareConfig(ctx context.Context) (*Config, error) {
 		return nil, err
 	}
 
-	config := Config{
-		Keyspaces: keyspaces,
-		Tables:    tables,
-	}
+	config := make(Config)
 
 	for table, fields := range tableFields {
-		config.TableConfig = append(config.TableConfig, TableConfig{
+		config[table] = TableConfig{
 			Keyspace:   tableKeyspaceMap[table],
-			Name:       table,
 			Fields:     fields,
 			PrimaryKey: tableKeys[table],
-		})
+		}
 	}
 
-	return &config, nil
+	return config, nil
 }
